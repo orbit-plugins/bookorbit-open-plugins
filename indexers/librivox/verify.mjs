@@ -4,7 +4,6 @@
  *
  * Run with: node verify.mjs
  */
-import { createHash, createPublicKey, verify } from 'node:crypto';
 import { readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -13,9 +12,6 @@ import plugin from './index.mjs';
 
 const here = dirname(fileURLToPath(import.meta.url));
 const fixture = (name) => readFileSync(join(here, 'fixtures', name), 'utf8');
-const source = readFileSync(join(here, 'index.mjs'));
-const manifest = JSON.parse(readFileSync(join(here, '..', '..', 'updates', 'librivox.json'), 'utf8'));
-const updateKey = createPublicKey({ key: { kty: 'OKP', crv: 'Ed25519', x: plugin.update.ed25519PublicKey }, format: 'jwk' });
 
 // "^Frankenstein", extended=1, limit=3: 381 read by twelve, 2030 and 5668 each read by one.
 const SEARCH = fixture('frankenstein.json');
@@ -64,7 +60,7 @@ const cfg = (over = {}) => ({
   baseUrl: 'https://librivox.org',
   credential: null,
   allowPrivateAddress: false,
-  categories: { ebook: [], audiobook: [], comic: [] },
+  categories: { ebook: [], audiobook: [] },
   seedRatioGoal: null,
   seedTimeMinutes: null,
   settings: null,
@@ -80,12 +76,6 @@ ok('joins no swarm and uses no categories', plugin.seedsBack === false && plugin
 ok('targets the contract this build speaks', plugin.apiVersion === 1);
 ok('plugin version', plugin.version === '1.0.1');
 ok('signed update channel', plugin.update?.manifestUrl.endsWith('/updates/librivox.json') && plugin.update.ed25519PublicKey.length === 43);
-ok(
-  'signed update manifest',
-  manifest.version === plugin.version &&
-    manifest.sha256 === createHash('sha256').update(source).digest('hex') &&
-    verify(null, source, updateKey, Buffer.from(manifest.signature, 'base64')),
-);
 
 console.log('search requests');
 {

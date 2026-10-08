@@ -1,0 +1,66 @@
+name: Verify and release
+
+# Every push and pull request runs each plugin's verify.mjs and checks the published manifests. A push
+# to main that raises a plugin's version also signs it: the job waits in the plugin-signing
+# environment for the maintainer's approval, signs the exact committed bytes with the key only that
+# environment holds, commits updates/<plugin>.json pinned to the commit, and tags <plugin>-v<version>.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions: {}
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  check:
+    name: Verify plugins and manifests
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+    outputs:
+      releases: ${{ steps.check.outputs.releases }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 24
+      - name: Run every verify.mjs
+        run: node scripts/release.mjs verify
+      - name: Check the update manifests
+        id: check
+        run: node scripts/release.mjs check
+
+  release:
+    name: Sign and publish
+    needs: check
+    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main' && needs.check.outputs.releases != '[]'
+    runs-on: ubuntu-24.04
+    environment: plugin-signing
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 24
+      - name: Sign
+        env:
+          PLUGIN_SIGNING_KEY: ${{ secrets.PLUGIN_SIGNING_KEY }}
+          RELEASES: ${{ needs.check.outputs.releases }}
+          RELEASE_OUTPUT_DIR: ${{ runner.temp }}/manifests
+        run: node scripts/release.mjs sign
+      - name: Publish
+        env:
+          RELEASE_OUTPUT_DIR: ${{ runner.temp }}/manifests
+        run: node scripts/release.mjs publish
