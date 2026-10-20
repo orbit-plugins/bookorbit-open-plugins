@@ -93,7 +93,7 @@ const LANGUAGE_BY_NAME = {
 
 export default {
   apiVersion: 1,
-  version: '1.0.1',
+  version: '1.1.0',
   update: {
     manifestUrl: 'https://raw.githubusercontent.com/orbit-plugins/bookorbit-open-plugins/main/updates/project-gutenberg.json',
     ed25519PublicKey: 'xifEwwGulukbjKtXn-ArR6BgJaOk6BUzfO97cZMt6gA',
@@ -159,6 +159,9 @@ export default {
           format: edition.file.format,
           // Resolved here, so a grab costs no further request.
           downloadUrl: edition.file.url,
+          // The book's page on the configured site, which lists every packaging and the credits.
+          // A host older than the field ignores it.
+          infoUrl: bookPageUrl(config, next.id),
           ...(language ? { language } : {}),
           ...(next.author ? { author: next.author } : {}),
           // Free in the sense the picker means: it costs the requester nothing to take.
@@ -234,6 +237,12 @@ async function bestEdition(id, config, host) {
     file: { url: url.href, fileName: '', sizeBytes: toNumber(best.link.length), format: best.format },
     ...(language ? { language } : {}),
   };
+}
+
+/** Under the base's own path, the way `call` builds its requests, so a mirror links to itself. */
+function bookPageUrl(config, id) {
+  const base = new URL(config.baseUrl);
+  return new URL(`${base.pathname.replace(/\/+$/, '')}/ebooks/${id}`, base).href;
 }
 
 async function call(config, host, path, params) {

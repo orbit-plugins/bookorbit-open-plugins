@@ -74,7 +74,7 @@ ok('needs no credential', plugin.requiresCredential === false && plugin.credenti
 ok('carries audiobooks and nothing else', JSON.stringify(plugin.mediaKinds) === '["audiobook"]');
 ok('joins no swarm and uses no categories', plugin.seedsBack === false && plugin.usesCategories === false);
 ok('targets the contract this build speaks', plugin.apiVersion === 1);
-ok('plugin version', plugin.version === '1.0.1');
+ok('plugin version', plugin.version === '1.1.0');
 ok('signed update channel', plugin.update?.manifestUrl.endsWith('/updates/librivox.json') && plugin.update.ed25519PublicKey.length === 43);
 
 console.log('search requests');
@@ -163,6 +163,7 @@ console.log('releases');
   ok('counts the tracks the zip holds', first.primaryFileCount === 22 && first.fileCount === undefined);
   // The URL is published with a raw space in it, which some clients reject outright.
   ok('encodes the archive URL published unencoded', first.downloadUrl.includes('%20') && !first.downloadUrl.includes(' '));
+  ok('links the project page', first.infoUrl === 'https://librivox.org/frankenstein-or-modern-prometheus-by-mary-w-shelley/', first.infoUrl);
   ok('costs one request for all of it', host.calls.length === 1);
 
   // Who read it is the one thing separating recordings of the same book.

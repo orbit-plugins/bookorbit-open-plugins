@@ -94,7 +94,7 @@ const LANGUAGE_BY_NAME = {
 
 export default {
   apiVersion: 1,
-  version: '1.0.1',
+  version: '1.1.0',
   update: {
     manifestUrl: 'https://raw.githubusercontent.com/orbit-plugins/bookorbit-open-plugins/main/updates/librivox.json',
     ed25519PublicKey: 'xifEwwGulukbjKtXn-ArR6BgJaOk6BUzfO97cZMt6gA',
@@ -158,7 +158,7 @@ export default {
    * itself before a download client is pointed at it.
    */
   async resolveFile(release, config, host) {
-    const url = safeZipUrl(release.downloadUrl);
+    const url = safeHttpUrl(release.downloadUrl);
     if (!url) {
       throw host.fail('error', `lists "${release.title}" but published no download for it. Pick another release.`);
     }
@@ -247,7 +247,8 @@ function untilFirstSeparator(title) {
 function toRelease(book) {
   const guid = book.id === undefined || book.id === null ? '' : String(book.id).trim();
   const title = typeof book.title === 'string' ? book.title.trim() : '';
-  const downloadUrl = safeZipUrl(book.url_zip_file);
+  const downloadUrl = safeHttpUrl(book.url_zip_file);
+  const infoUrl = safeHttpUrl(book.url_librivox);
   // A project with no id, no title or no packaged download is not a worse choice, it is not a
   // choice: nothing downstream could grab it.
   if (!guid || !title || !downloadUrl) return null;
@@ -266,6 +267,9 @@ function toRelease(book) {
     title: readers ? `${title} (${readers})` : title,
     bookTitle: title,
     downloadUrl,
+    // The project page lists the readers, the source text and the section list. A host older than
+    // the field ignores it.
+    ...(infoUrl ? { infoUrl } : {}),
     sizeBytes: durationSeconds === null ? null : Math.round(durationSeconds * BYTES_PER_SECOND),
     // No swarm exists. Null, never zero, or the zero-seeder hard filter drops every release.
     seeders: null,
@@ -323,11 +327,11 @@ function authorName(authors) {
 }
 
 /**
- * LibriVox publishes this URL with a raw space in it, as `.../formats=64KBPS MP3&file=/x.zip`, which
- * some clients reject outright. Normalised here so the encoded form is what is stored and what a
- * download client is eventually handed.
+ * LibriVox publishes the zip URL with a raw space in it, as `.../formats=64KBPS MP3&file=/x.zip`,
+ * which some clients reject outright. Normalised here so the encoded form is what is stored and what
+ * a download client is eventually handed. The project page goes through the same check.
  */
-function safeZipUrl(raw) {
+function safeHttpUrl(raw) {
   const trimmed = typeof raw === 'string' ? raw.trim() : '';
   if (!trimmed) return null;
   try {

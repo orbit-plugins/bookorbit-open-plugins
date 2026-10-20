@@ -89,7 +89,7 @@ ok('needs no credential', plugin.requiresCredential === false && plugin.credenti
 ok('carries ebooks and nothing else', JSON.stringify(plugin.mediaKinds) === '["ebook"]');
 ok('joins no swarm and uses no categories', plugin.seedsBack === false && plugin.usesCategories === false);
 ok('targets the contract this build speaks', plugin.apiVersion === 1);
-ok('plugin version', plugin.version === '1.0.1');
+ok('plugin version', plugin.version === '1.1.0');
 ok(
   'signed update channel',
   plugin.update?.manifestUrl.endsWith('/updates/project-gutenberg.json') && plugin.update.ed25519PublicKey.length === 43,
@@ -122,6 +122,7 @@ console.log('reading the feed');
   ok('reports no swarm counts rather than zero', byGuid['84'].seeders === null && byGuid['84'].leechers === null);
   ok('is free in the sense the picker means', byGuid['84'].freeleech === true);
   ok('is never a split set', byGuid['84'].primaryFileCount === 1);
+  ok('links the book page on the configured site', byGuid['84'].infoUrl === 'https://www.gutenberg.org/ebooks/84', byGuid['84'].infoUrl);
   // Unicode in a title has to survive the reader, which reads the feed itself rather than with an
   // XML parser. Entry 11659 carries U+2014, written escaped here because the character itself is
   // not allowed in this codebase.
