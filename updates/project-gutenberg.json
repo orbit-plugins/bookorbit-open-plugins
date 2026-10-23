@@ -1,8 +1,8 @@
 {
   "schemaVersion": 1,
   "type": "project-gutenberg",
-  "version": "1.0.1",
-  "sourceUrl": "https://raw.githubusercontent.com/orbit-plugins/bookorbit-open-plugins/main/indexers/project-gutenberg/index.mjs",
-  "sha256": "d73e097dd582ad07af6abfe95af09fe1a98eeecd65020e17562b3d05e00a18c1",
-  "signature": "tHtLyPM5mJRswZeHzZ8RNsPOHHmKNmE8tiP6qhmJxt8G5HMdPRi/9G8bOIRw4hQbgjp+lUoK+n0ZaoUYrUDfCQ=="
+  "version": "1.1.0",
+  "sourceUrl": "https://raw.githubusercontent.com/orbit-plugins/bookorbit-open-plugins/e0128a637ec2ccf2b36353e0e21ca2af8abbeb1c/indexers/project-gutenberg/index.mjs",
+  "sha256": "f263ec439384e57024b7ec1c957400b9f0958820c174884de402a23fb1234adb",
+  "signature": "b8DNa23rJLbIL1dWRU7hFclbyb5++abjYKymuMSYR7GG3nBh/KNGxzEbm1F4z6YfxfHSxmxLUcbc+jX+nY9hCQ=="
 }

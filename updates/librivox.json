@@ -1,8 +1,8 @@
 {
   "schemaVersion": 1,
   "type": "librivox",
-  "version": "1.0.1",
-  "sourceUrl": "https://raw.githubusercontent.com/orbit-plugins/bookorbit-open-plugins/main/indexers/librivox/index.mjs",
-  "sha256": "f73649a5e6da502ef2e9e2a4d0d6ec7d2b155feb1d9fe5069302cd3693727ac8",
-  "signature": "Re0NF0ekTOrjRlDjLb9KZ6smqu1Yd9SqqYg0XjUvNya51Ta7g8Z84tzDhjazVizRYCmyp570XI4V88J17eHmCw=="
+  "version": "1.1.0",
+  "sourceUrl": "https://raw.githubusercontent.com/orbit-plugins/bookorbit-open-plugins/e0128a637ec2ccf2b36353e0e21ca2af8abbeb1c/indexers/librivox/index.mjs",
+  "sha256": "93aff79339edc7968b95a38c02c253f7c3e9f3edbb9c22cdbb581ce2828ede71",
+  "signature": "VHlK8HbuhHH1Tb3vvae2GY5uFrmYtBNeVxXQhvV8tOIFfQrZHwno3wzLYwaF8oWxJjoLxPmrbQfJ+ALsejXsBA=="
 }
